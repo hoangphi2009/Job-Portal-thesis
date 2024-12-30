@@ -1,64 +1,94 @@
 import Navbar from "./shared/Navbar";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import LogoIU from "../assets/IU.png";
 import { Button } from "./ui/button";
 import { Contact, Mail, Pen } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Label } from "./ui/label";
-const skills = ["html", "css", "JS"];
+import AppliedJobTable from "./AppliedJobTable";
+import { useState } from "react";
+import UpdateProfileDialog from "./UpdateProfileDialog";
+import { useSelector } from "react-redux";
+import NoUser from "../assets/nouser.png";
+import useGetAppliedJobs from "@/hooks/useGetAppliedJobs";
+
+const isResume = true;
+
 const Profile = () => {
-  const isResume = true;
+  useGetAppliedJobs();
+  const [open, setOpen] = useState(false);
+  const { user } = useSelector((store) => store.auth);
+
   return (
-    <div>
+    <div className="dark:bg-gray-900 dark:text-white">
       <Navbar />
-      <div className="max-w-7xl mx-auto bg-orange-200 border border-gray-200 rounded-2xl my-5 p-8">
+      <div className="max-w-5xl mx-auto bg-orange-200 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl my-5 p-8">
         <div className="flex justify-between">
           <div className="flex items-center gap-4">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={LogoIU} alt="profile" />
+              <AvatarImage
+                src={user?.profile?.profilePhoto || NoUser}
+                alt="profile"
+              />
             </Avatar>
             <div>
-              <h1 className="font-medium text-xl">Full Name</h1>
-              <p>decreption</p>
+              <h1 className="font-medium text-xl">{user?.fullname}</h1>
+              <p className="text-gray-700 dark:text-gray-300">
+                {user?.profile?.bio}
+              </p>
             </div>
           </div>
-          <Button className="text-right" variant="outline">
+          <Button
+            onClick={() => setOpen(true)}
+            className="text-right"
+            variant="outline"
+          >
             <Pen />
           </Button>
         </div>
         <div className="my-5">
           <div className="flex items-center gap-3 my-2">
             <Mail />
-            <span>ABC123@gmail.com</span>
+            <span>{user?.email}</span>
           </div>
           <div className="flex items-center gap-3 my-2">
             <Contact />
-            <span>0123456789</span>
+            <span>{user?.phoneNumber}</span>
           </div>
         </div>
         <div className="my-5">
-          <h1>Skills</h1>
+          <h1 className="dark:text-white">Skills</h1>
           <div className="flex items-center gap-2">
-            {skills.length > 0 ? (
-              skills.map((item, index) => <Badge key={index}>{item}</Badge>)
+            {user?.profile?.skills.length > 0 ? (
+              user?.profile?.skills.map((item, index) => (
+                <Badge key={index} className="text-white dark:text-gray-900">
+                  {item}
+                </Badge>
+              ))
             ) : (
-              <span>No skills</span>
+              <span className="dark:text-gray-400">No skills</span>
             )}
           </div>
         </div>
         <div className="grid w-full max-w-sm items-center gap-2">
-          <Label className="text-md font-bold">Resume</Label>
+          <Label className="text-md font-bold dark:text-white">Resume</Label>
           {isResume ? (
-            <a target="blank" href="yotube.com" className="text-blue-600 w-full hover:underline cursor-pointer">Your Name </a>
+            <a
+              target="blank"
+              href={user?.profile?.resume}
+              className="text-blue-600 dark:text-blue-400 w-full hover:underline cursor-pointer"
+            >
+              {user?.profile?.resumeOriginalName}
+            </a>
           ) : (
-            <span>No Resume</span>
+            <span className="dark:text-gray-400">No Resume</span>
           )}
         </div>
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl">
-          <h1>Applied Jobs</h1>
-
-        </div>
       </div>
+      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl">
+        <h1 className="font-bold text-xl my-7 dark:text-white">Applied Jobs</h1>
+        <AppliedJobTable />
+      </div>
+      <UpdateProfileDialog open={open} setOpen={setOpen} />
     </div>
   );
 };

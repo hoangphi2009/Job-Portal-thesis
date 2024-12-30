@@ -1,13 +1,26 @@
 import { Bookmark } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarImage } from "./ui/avatar";
-import LogoIU from "../assets/IU.png";
+import NoUser from "../assets/nouser.png";
 import { Badge } from "./ui/badge";
-const Job = () => {
+import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
+
+const Job = ({ job }) => {
+  const navigate = useNavigate();
+
+  const daysAgoFunction = (mongodbTime) => {
+    const createdAt = new Date(mongodbTime);
+    const now = new Date();
+    const diff = now.getTime() - createdAt.getTime();
+    const daysAgo = Math.floor(diff / (1000 * 60 * 60 * 24));
+    return daysAgo;
+  };
+
   return (
-    <div className="p-5 rounded-md shadow-xl bg-white border border-gray-100">
-      <div className="flex items-center justify-between">
-        <p className="text-sm ">2 days ago</p>
+    <div className="p-5 rounded-md shadow-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+      <div className="flex items-center justify-between text-gray-700 dark:text-gray-400">
+        <p className="text-sm">{daysAgoFunction(job?.createdAt)} days ago</p>
         <Button variant="outline" className="rounded-full" size="icon">
           <Bookmark />
         </Button>
@@ -15,37 +28,80 @@ const Job = () => {
       <div className="flex items-center gap-2 my-2">
         <Button className="p-6" variant="outline" size="icon">
           <Avatar>
-            <AvatarImage src={LogoIU} />
+            <AvatarImage
+              src={job?.company?.logo || NoUser}
+              alt="Company Logo"
+            />
           </Avatar>
         </Button>
         <div>
-          <h1 className="font-medium text-lg">Company</h1>
-          <p className="text-sm text-red-500">VietNam</p>
+          <h1 className="font-medium text-lg text-gray-800 dark:text-gray-200">
+            {job?.company?.name}
+          </h1>
+          <p className="text-sm text-red-500">{job?.location}</p>
         </div>
       </div>
       <div>
-        <h1 className="font-bold text-lg my-2">Title</h1>
-        <p className="text-sm text-gray-700">decreption</p>
+        <h1 className="font-bold text-lg my-2 text-gray-800 dark:text-gray-200">
+          {job?.title}
+        </h1>
+        <p className="text-sm text-gray-700 dark:text-gray-400">
+          {job?.description}
+        </p>
       </div>
       <div className="flex items-center gap-2 mt-4">
-        <Badge className={"text-blue-700 font-bold "} variant="ghost">
-          Positions
+        <Badge
+          key="position"
+          className="text-blue-700 dark:text-blue-400 font-bold"
+          variant="ghost"
+        >
+          Positions: {job?.position}
         </Badge>
-        <Badge className={"text-[red] font-bold "} variant="ghost">
-          Time
+        <Badge
+          key="jobType"
+          className="text-red-500 dark:text-red-400 font-bold"
+          variant="ghost"
+        >
+          Time: {job?.jobType}
         </Badge>
-        <Badge className={"text-[#df3fca] font-bold "} variant="ghost">
-          Address
+        <Badge
+          key="salary"
+          className="text-pink-500 dark:text-pink-400 font-bold"
+          variant="ghost"
+        >
+          Salary: {job?.salary}
         </Badge>
       </div>
-      <div className="flex items-center gap-4 mt-4">
-        <Button variant="outline">Details</Button>
-        <Button className="bg-[#f462ea] hover:bg-[#38d3cb] text-white">
+      <div className="flex items-center gap-4 mt-4 dark:text-white">
+        <Button
+          onClick={() => navigate(`/description/${job?._id}`)}
+          variant="outline"
+        >
+          Details
+        </Button>
+        <Button className="bg-pink-400 hover:bg-teal-400 dark:bg-teal-600 dark:hover:bg-teal-500 text-white">
           Save
         </Button>
       </div>
     </div>
   );
+};
+
+Job.propTypes = {
+  job: PropTypes.shape({
+    createdAt: PropTypes.string.isRequired,
+    company: PropTypes.shape({
+      name: PropTypes.string,
+      logo: PropTypes.string,
+    }),
+    location: PropTypes.string,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    position: PropTypes.number,
+    jobType: PropTypes.string,
+    salary: PropTypes.string,
+    _id: PropTypes.string,
+  }).isRequired,
 };
 
 export default Job;

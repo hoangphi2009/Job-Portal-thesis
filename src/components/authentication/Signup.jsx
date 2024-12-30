@@ -4,10 +4,14 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { RadioGroup } from "../ui/radio-group";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { USER_API_END_POINT } from "@/utils/constant";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "@/redux/authSlice";
+import Footer from "../shared/Footer";
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -18,12 +22,14 @@ const Signup = () => {
     file: "",
     role: "",
   });
+  const { loading, user } = useSelector((store) => store.auth);
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
   const changeFileHandler = (e) => {
     setInput({ ...input, file: e.target.files?.[0] });
   };
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -32,12 +38,12 @@ const Signup = () => {
     formData.append("email", input.email);
     formData.append("password", input.password);
     formData.append("phoneNumber", input.phoneNumber);
-    formData.append("file", input.file);
     formData.append("role", input.role);
     if (input.file) {
       formData.append("file", input.file);
     }
     try {
+      dispatch(setLoading(true));
       const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -51,8 +57,15 @@ const Signup = () => {
     } catch (error) {
       console.log("Registration error:", error.response?.data || error.message);
       toast.error(error.response?.data?.message || "An error occurred");
+    } finally {
+      dispatch(setLoading(false));
     }
   };
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, []);
   return (
     <div>
       <Navbar />
@@ -130,7 +143,7 @@ const Signup = () => {
             <div className="flex items-center gap-2">
               <RadioGroup>
                 <div className="flex items-center gap-2">
-                  <Label>Profile</Label>
+                  <Label>Avatar</Label>
                   <Input
                     accept="image/*"
                     type="file"
@@ -141,12 +154,19 @@ const Signup = () => {
               </RadioGroup>
             </div>
           </div>
-          <Button
-            type="submit"
-            className="w-full my-4 bg-[#000000] hover:bg-[#cf3e3e]"
-          >
-            Signup
-          </Button>
+          {loading ? (
+            <Button className="w-full my-4">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please Waiting...
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              className="w-full my-4 hover:bg-[#45ea69] bg-[#cf3e3e]"
+            >
+              Sign Up
+            </Button>
+          )}
           <span className="text-sm">
             Already have an account?
             <Link to="/login" className="text-blue-500 ml-2">
@@ -155,6 +175,7 @@ const Signup = () => {
           </span>
         </form>
       </div>
+      <Footer />
     </div>
   );
 };

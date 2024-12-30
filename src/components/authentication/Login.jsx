@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { RadioGroup } from "../ui/radio-group";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { USER_API_END_POINT } from "@/utils/constant";
 import axios from "axios";
 import { toast } from "sonner";
@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setUser } from "@/redux/authSlice";
 // import store from "@/redux/store";
 import { Loader2 } from "lucide-react";
+import Footer from "../shared/Footer";
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -22,7 +23,7 @@ const Login = () => {
   const changEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
-  const {loading} = useSelector(store => store.auth);
+  const {loading, user} = useSelector(store => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const submitHandler = async (e) => {
@@ -47,6 +48,11 @@ const Login = () => {
       dispatch(setLoading(false));
     }
   };
+  useEffect(() => {
+    if(user){
+      navigate("/")
+    }
+  }, []);
   return (
     <div>
       <Navbar />
@@ -110,7 +116,7 @@ const Login = () => {
           ) : (
             <Button
               type="submit"
-              className="w-full my-4 bg-[#000000] hover:bg-[#cf3e3e]"
+              className="w-full my-4 bg-[#eb3232] hover:bg-[#45ea69]"
             >
               Login
             </Button>
@@ -123,6 +129,7 @@ const Login = () => {
           </span>
         </form>
       </div>
+      <Footer />
     </div>
   );
 };

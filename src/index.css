@@ -2,6 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+@media print{
+  #no-print{
+    display: none;
+  }
+  #print-area{
+    display: block;
+  }
+  body{
+    margin: 0mm;
+    padding: 0mm;
+    box-shadow: none;
+  }
+}
+@page{
+  size: auto;
+  margin: 0mm;
+}
+.rsw-ce ul {
+    list-style: disc;
+    padding-left: 2em;
+  }
+  
+  .rsw-ce ol {
+    list-style: decimal;
+    padding-left: 2em;
+  }
+
+/* Add this to your CSS file */
+li {
+  margin-bottom: 5px;
+}
+ol {
+  list-style-type: decimal;
+  list-style-position: inside;
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 5px;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
