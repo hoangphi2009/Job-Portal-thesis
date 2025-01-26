@@ -145,3 +145,60 @@ export const deleteJobById = async (req, res) => {
     }
 };
 
+export const deleteAnyJobById = async (req, res) => {
+    try {
+        const jobId = req.params.id; // Get the job ID from the route parameters
+
+        // Find the job by its ID
+        const job = await Job.findById(jobId);
+
+        // Check if the job exists
+        if (!job) {
+            return res.status(404).json({
+                message: "Job not found.",
+                success: false,
+            });
+        }
+
+        // Any authenticated user can delete the job, no check for creator
+        await Job.findByIdAndDelete(jobId);
+
+        return res.status(200).json({
+            message: "Job deleted successfully.",
+            success: true,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "An error occurred while deleting the job.",
+            success: false,
+        });
+    }
+};
+
+export const getAllJobsFromDatabase = async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({
+            message: "You do not have permission to access this resource.",
+            success: false
+        });
+    }
+    try {
+        const jobs = await Job.find({}).populate({
+            path: "company"
+        }).sort({ createdAt: -1 });  
+
+        return res.status(200).json({
+            jobs: jobs,
+            success: true,
+            message: jobs.length ? "Jobs retrieved successfully." : "No jobs available."
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "An error occurred while fetching all jobs.",
+            success: false
+        });
+    }
+};
+

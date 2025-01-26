@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Log to check if environment variables are loaded
 console.log("Cloudinary Configuration:", {
     CLOUD_NAME: process.env.CLOUD_NAME,
     API_KEY: process.env.API_KEY,

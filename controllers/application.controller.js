@@ -1,5 +1,7 @@
 import { Application } from "../models/application.model.js";
 import { Job } from "../models/job.model.js";
+import { User } from "../models/user.model.js";
+import sendMail from "../mail/mail.js";
 export const applyJob = async (req,res) => {
     try {
         const userId = req.id;
@@ -71,7 +73,7 @@ export const getAppliedJobs = async (req,res) =>{
         console.log(error);
     }
 }
-//admin
+//recruiter
 export const getApplicants = async (req,res)=>{
     try {
         const jobId = req.params.id;
@@ -113,8 +115,24 @@ export const updateStatus = async (req,res)=>{
                 success: false
             })
         }
+        // Store the previous status for the email notification
+        const previousStatus = application.status; 
+
         application.status = status.toLowerCase();
         await application.save();
+
+        const user = await User.findById(application.applicant);
+        
+        await sendMail({
+            email: user?.email,
+            subject: "Application Status Update",
+            html: `
+                <h1>Your application status has been updated!</h1>
+                <p>Previous Status: ${previousStatus}</p>
+                <p>New Status: ${status}</p>
+            `
+        });
+
         return res.status(200).json({
             message: "Application status updated successfully.",
             success: true
@@ -123,3 +141,84 @@ export const updateStatus = async (req,res)=>{
         console.log(error);
     }
 }
+
+// admin
+export const getAllApplicantsByAdmin = async (req, res) => {
+    try {
+        // Kiểm tra xem người dùng có phải là admin không
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({
+                message: "Access denied. Only admins can perform this action.",
+                success: false
+            });
+        }
+
+        // Truy vấn tìm tất cả người dùng có role là 'student'
+        const students = await User.find({ role: 'student' }).sort({ createdAt: -1 });
+
+        if (students.length === 0) {
+            return res.status(404).json({
+                message: "No students found.",
+                success: false
+            });
+        }
+        return res.status(200).json({
+            students,
+            success: true
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "An error occurred while retrieving students.",
+            success: false
+        });
+    }
+};
+export const getAppliedByAdmin = async (req, res) => {
+    try {
+        // Kiểm tra xem người dùng có phải là admin không
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({
+                message: "Access denied. Only admins can perform this action.",
+                success: false
+            });
+        }
+
+        // Tìm tất cả các công việc và lấy thông tin chi tiết của ứng viên cho mỗi công việc
+        const jobs = await Job.find().populate({
+            path: 'applications',
+            populate: {
+                path: 'applicant',
+                select: 'fullname' // Thay đổi để lấy tên đầy đủ của ứng viên
+            }
+        });
+
+        // Tạo một mảng với thông tin về số lượng ứng viên và thông tin chi tiết cho mỗi công việc
+        const jobApplicantDetails = jobs.map(job => {
+            const applicants = job.applications.map(application => {
+                return {
+                    fullName: application.applicant.fullname, // Lấy tên đầy đủ của ứng viên
+                    appliedDate: application.createdAt // Lấy thời gian ứng tuyển
+                };
+            });
+            return {
+                jobId: job._id,
+                jobTitle: job.title,
+                numberOfApplicants: job.applications.length, // Đếm số lượng ứng viên
+                applicants: applicants // Thông tin chi tiết về từng ứng viên
+            };
+        });
+
+        return res.status(200).json({
+            jobApplicantDetails,
+            success: true
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "An error occurred while retrieving the job applicants details.",
+            success: false
+        });
+    }
+};
+

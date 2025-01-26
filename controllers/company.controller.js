@@ -51,6 +51,43 @@ export const getCompany = async (req, res) => {
         console.log(error);
     }
 }
+//admin
+export const getAllCompanies = async (req, res) => {
+    try {
+        // Check if the user is an admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({
+                message: "You are not authorized to view all companies.",
+                success: false,
+            });
+        }
+
+        // Retrieve all companies from the database
+        const companies = await Company.find({});
+
+        // Check if there are any companies found
+        if (!companies || companies.length === 0) {
+            return res.status(404).json({
+                message: "No companies found.",
+                success: false,
+            });
+        }
+
+        // Return the list of all companies
+        return res.status(200).json({
+            message: "All companies retrieved successfully.",
+            companies,
+            success: true,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "An error occurred while retrieving the companies.",
+            success: false,
+        });
+    }
+};
+
 //get company by ID
 export const getCompanyById = async (req, res) => {
     try {

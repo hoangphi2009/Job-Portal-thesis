@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
     fullname: {
         type: String,
-        required: true
+        required: function () { return this.role !== 'admin'; }
     },
     email: {
         type: String,
@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: Number,
-        required: true
+        required: function () { return this.role !== 'admin'; }
     },
     password: {
         type: String,
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['student', 'recruiter'],
+        enum: ['student', 'recruiter', 'admin'],
         required: true
     },
     profile: {

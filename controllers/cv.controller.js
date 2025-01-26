@@ -406,3 +406,35 @@ export const getCVById = async (req, res) => {
     }
 };
 
+export const getAllCVsForAdmin = async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({
+            message: "Access denied. Admin privileges required.",
+            success: false
+        });
+    }
+
+    try {
+        // Fetch all CVs from the database without filtering by userId
+        const allCVs = await Cv.find({}).exec();
+
+        if (!allCVs || allCVs.length === 0) {
+            return res.status(404).json({
+                message: "No CVs found",
+                success: false
+            });
+        }
+
+        return res.status(200).json({
+            message: "All CVs fetched successfully",
+            cvs: allCVs,
+            success: true
+        });
+    } catch (error) {
+        console.error("Error fetching all CVs:", error);
+        return res.status(500).json({
+            message: "Error fetching all CVs",
+            success: false
+        });
+    }
+};
