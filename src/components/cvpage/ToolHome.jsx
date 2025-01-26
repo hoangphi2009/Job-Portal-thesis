@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import useGetAllCvs from "@/hooks/useGetAllCvs";
 
 const ToolHome = () => {
-  const { cvs } = useSelector((state) => state.cv);
+  const { cvs } = useSelector((stote) => stote.cv);
   useGetAllCvs();
 
   return (

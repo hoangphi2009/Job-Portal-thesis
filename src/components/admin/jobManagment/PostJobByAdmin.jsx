@@ -1,9 +1,6 @@
-import  { useState } from "react";
-import Navbar from "../shared/Navbar";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { useSelector } from "react-redux";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -11,16 +8,17 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import axios from "axios";
+} from "@/components/ui/select";
 import { JOB_API_END_POINT } from "@/utils/constant";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import {  useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import AdminLeftBar from "../AdminLeftbar";
 
-// const companyArray = [];
-
-const PostJob = () => {
+const PostJobByAdmin = () => {
   const [input, setInput] = useState({
     title: "",
     description: "",
@@ -51,7 +49,7 @@ const PostJob = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.post(`${JOB_API_END_POINT}/post`, input, {
+      const res = await axios.post(`${JOB_API_END_POINT}/post/admin`, input, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -69,14 +67,19 @@ const PostJob = () => {
   };
 
   return (
-    <div>
-      <Navbar />
-      <div className="flex items-center justify-center w-screen my-5">
+    <div className="flex min-h-screen">
+      <AdminLeftBar className="w-1/4 border-r border-gray-200" />
+      <div>
+        <Button className="m-4" onClick={() => navigate("/admin/jobs")}>
+          Back
+        </Button>
+      </div>
+      <div className="w-3/4 p-8">
         <form
           onSubmit={submitHandler}
-          className="p-8 max-w-4xl border border-gray-200 shadow-lg rounded-md"
+          className="p-8 max-w-4xl mx-auto border border-gray-200 shadow-lg rounded-md"
         >
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Title</Label>
               <Input
@@ -148,7 +151,7 @@ const PostJob = () => {
               />
             </div>
             <div>
-              <Label>No of Postion</Label>
+              <Label>No of Position</Label>
               <Input
                 type="number"
                 name="position"
@@ -159,7 +162,7 @@ const PostJob = () => {
             </div>
             {companies.length > 0 && (
               <Select onValueChange={selectChangeHandler}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a Company" />
                 </SelectTrigger>
                 <SelectContent>
@@ -181,8 +184,7 @@ const PostJob = () => {
           </div>
           {loading ? (
             <Button className="w-full my-4">
-              {" "}
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait{" "}
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
             </Button>
           ) : (
             <Button type="submit" className="w-full my-4">
@@ -191,7 +193,7 @@ const PostJob = () => {
           )}
           {companies.length === 0 && (
             <p className="text-xs text-red-600 font-bold text-center my-3">
-              *Please register a company first, before posting a jobs
+              *Please register a company first, before posting jobs
             </p>
           )}
         </form>
@@ -200,4 +202,4 @@ const PostJob = () => {
   );
 };
 
-export default PostJob;
+export default PostJobByAdmin;

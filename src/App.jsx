@@ -6,18 +6,26 @@ import Jobs from "./components/Jobs";
 import Browse from "./components/Browse";
 import Profile from "./components/Profile";
 import JobDescription from "./components/JobDescription";
-import Companies from "./components/admin/Companies";
-import CompanyCreate from "./components/admin/CompanyCreate";
-import CompanySetup from "./components/admin/CompanySetup";
-import RecruiterJobs from "./components/admin/RecruiterJobs";
-import PostJob from "./components/admin/PostJob";
-import Applicants from "./components/admin/Applicants";
-import ProtectedRoute from "./components/admin/ProtectedRoute";
+import Companies from "./components/recruiter/Companies";
+import CompanyCreate from "./components/recruiter/CompanyCreate";
+import CompanySetup from "./components/recruiter/CompanySetup";
+import RecruiterJobs from "./components/recruiter/RecruiterJobs";
+import PostJob from "./components/recruiter/PostJob";
+import Applicants from "./components/recruiter/Applicants";
+import ProtectedRoute from "./components/recruiter/ProtectedRoute";
 import { ThemeProvider } from "./components/ThemeProvider";
 import Tool from "./components/cvpage/Tool";
 import PersonalCvSetup from "./components/cvpage/PersonalCvSetup";
 import ViewCV from "./components/cvpage/ViewCV";
 import ChatBox from "./components/chatbox/ChatBox";
+import AdminPage from "./components/admin/AdminPage";
+import StudentManagment from "./components/admin/userManagment/StudentManagment";
+import JobManagment from "./components/admin/jobManagment/JobManagment";
+import JobDescriptionByAdmin from "./components/admin/jobManagment/JobDescriptionByAdmin";
+import PostJobByAdmin from "./components/admin/jobManagment/PostJobByAdmin";
+import UserManagment from "./components/admin/userManagment/UserManagment";
+import CompanyManagment from "./components/admin/companyManagment/CompanyManagment";
+import RecruiterManagment from "./components/admin/userManagment/RecruiterManagment";
 
 const appRouter = createBrowserRouter([
   {
@@ -64,7 +72,41 @@ const appRouter = createBrowserRouter([
 
   //admin
   {
+    path: "/admin",
+    element: <AdminPage />,
+  },
+  {
+    path: "/admin/students",
+    element: <StudentManagment />,
+  },
+  {
+    path: "/admin/recruiters",
+    element: <RecruiterManagment />,
+  },
+  {
+    path: "/admin/users",
+    element: <UserManagment />,
+  },
+  {
+    path: "/admin/jobs",
+    element: <JobManagment />,
+  },
+  {
     path: "/admin/companies",
+    element: <CompanyManagment />,
+  },
+  {
+    path: "/admin/description/:id",
+    element: <JobDescriptionByAdmin />,
+  },
+  {
+    path: "/admin/jobs/create",
+    element: <PostJobByAdmin />,
+  },
+
+  //recruiter
+  {
+    path: "/recruiter/companies",
     element: (
       <ProtectedRoute>
         <Companies />
@@ -72,7 +114,7 @@ const appRouter = createBrowserRouter([
     ),
   },
   {
-    path: "/admin/companies/create",
+    path: "/recruiter/companies/create",
     element: (
       <ProtectedRoute>
         <CompanyCreate />
@@ -80,7 +122,7 @@ const appRouter = createBrowserRouter([
     ),
   },
   {
-    path: "/admin/companies/:id",
+    path: "/recruiter/companies/:id",
     element: (
       <ProtectedRoute>
         <CompanySetup />{" "}
@@ -88,7 +130,7 @@ const appRouter = createBrowserRouter([
     ),
   },
   {
-    path: "/admin/jobs",
+    path: "/recruiter/jobs",
     element: (
       <ProtectedRoute>
         <RecruiterJobs />
@@ -96,7 +138,7 @@ const appRouter = createBrowserRouter([
     ),
   },
   {
-    path: "/admin/jobs/create",
+    path: "/recruiter/jobs/create",
     element: (
       <ProtectedRoute>
         <PostJob />{" "}
@@ -104,7 +146,7 @@ const appRouter = createBrowserRouter([
     ),
   },
   {
-    path: "/admin/jobs/:id/applicants",
+    path: "/recruiter/jobs/:id/applicants",
     element: (
       <ProtectedRoute>
         <Applicants />{" "}

@@ -31,7 +31,7 @@ const CompanyCreate = () => {
          dispatch(setSingleCompany(res.data.company));
          toast.success(res.data.message);
          const companyId = res?.data?.company?._id;
-         navigate(`/admin/companies/${companyId}`);
+         navigate(`/recruiter/companies/${companyId}`);
        }
      } catch (error) {
        console.log(error);
@@ -61,7 +61,7 @@ const CompanyCreate = () => {
           <Button
             variant="outline"
             className="bg-red-500 text-white"
-            onClick={() => navigate("/admin/companies")}
+            onClick={() => navigate("/recruiter/companies")}
           >
             Cancel
           </Button>

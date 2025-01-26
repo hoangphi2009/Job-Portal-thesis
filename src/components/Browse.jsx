@@ -22,7 +22,7 @@ const Browse = () => {
     <div className="bg-white dark:bg-gray-900 text-black dark:text-gray-200 min-h-screen">
       <Navbar />
       <div className="max-w-7xl mx-auto my-10">
-        <h1 className="font-bold text-xl my-10">
+        <h1 className="font-bold text-xl my-10 sticky top-0 z-50 ">
           Search Results ({allJobs.length})
         </h1>
         <motion.div

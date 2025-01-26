@@ -2,22 +2,20 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import CompaniesTable from "./CompaniesTable";
+import useGetAllCompanies from "@/hooks/useGetAllCompanies";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setSearchJobByText } from "@/redux/jobSlice";
-import RecruiterTable from "./RecruiterTable";
-import useGetAllRecruiterJobs from "@/hooks/useGetAllRecruiterJobs";
+import { setSearchCompanyByText } from "@/redux/companySlice";
 
-const RecruiterJobs = () => {
-  useGetAllRecruiterJobs();
+const Companies = () => {
+  useGetAllCompanies();
   const [input, setInput] = useState("");
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-
+  const dispach = useDispatch();
   useEffect(() => {
-    dispatch(setSearchJobByText(input)); 
-  }, [input, dispatch]);
-
+    dispach(setSearchCompanyByText(input));
+  }, [input]);
   return (
     <div>
       <Navbar />
@@ -28,14 +26,17 @@ const RecruiterJobs = () => {
             placeholder="Search..."
             onChange={(e) => setInput(e.target.value)}
           />
-          <Button onClick={() => navigate("/admin/jobs/create")}>
-            New Jobs
+          <Button
+            className=""
+            onClick={() => navigate("/recruiter/companies/create")}
+          >
+            New Companies
           </Button>
         </div>
-        <RecruiterTable />
+        <CompaniesTable />
       </div>
     </div>
   );
 };
 
-export default RecruiterJobs;
+export default Companies;

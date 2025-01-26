@@ -6,17 +6,17 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 
-function DeleteCvDialog({ open, onClose, onConfirm }) {
+function DeleteJobDialog({ open, onClose, onConfirm }) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogDescription>
-          Are you sure you want to delete this Resume?
+          Are you sure you want to delete this job?
         </DialogDescription>
         <div className="mt-4 flex justify-end space-x-2">
           <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={onConfirm} className="hover:bg-red-600" color="primary">
+          <Button onClick={onConfirm} color="primary">
             Confirm
           </Button>
         </div>
@@ -25,4 +25,4 @@ function DeleteCvDialog({ open, onClose, onConfirm }) {
   );
 }
 
-export default DeleteCvDialog;
+export default DeleteJobDialog;

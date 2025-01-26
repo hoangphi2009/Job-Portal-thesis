@@ -1,12 +1,16 @@
-import { Bookmark } from "lucide-react";
-import { Button } from "./ui/button";
-import { Avatar, AvatarImage } from "./ui/avatar";
-import NoUser from "../assets/nouser.png";
-import { Badge } from "./ui/badge";
+import { Button } from "@/components/ui/button";
+import { Trash2Icon } from "lucide-react";
+import NoUser from "@/assets/nouser.png";
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import DeleteJobDialog from "@/components/recruiter/DeleteJobDialog";
+import axios from "axios";
+import { JOB_API_END_POINT } from "@/utils/constant";
+import { toast } from "sonner";
+import { useState } from "react";
 
-const Job = ({ job }) => {
+const JobByAdmin = ({ job, onDelete }) => {
   const navigate = useNavigate();
   const daysAgoFunction = (mongodbTime) => {
     const createdAt = new Date(mongodbTime);
@@ -15,14 +19,55 @@ const Job = ({ job }) => {
     const daysAgo = Math.floor(diff / (1000 * 60 * 60 * 24));
     return daysAgo;
   };
+  const [open, setOpen] = useState(false);
+  const [jobIdToDelete, setJobIdToDelete] = useState(null);
+  const handleOpenDialog = (jobId) => {
+    setJobIdToDelete(jobId);
+    setOpen(true);
+  };
 
+  const handleCloseDialog = () => {
+    setOpen(false);
+    setJobIdToDelete(null);
+  };
+  const handleConfirmDelete = async () => {
+    try {
+      setOpen(false);
+      axios.defaults.withCredentials = true;
+      const res = await axios.delete(
+        `${JOB_API_END_POINT}/delete/admin/${jobIdToDelete}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message || "Job deleted successfully!");
+        onDelete(jobIdToDelete);
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "An error occurred while deleting the job."
+      );
+      console.error("Error deleting job:", error);
+    }
+  };
   return (
     <div className="p-5 rounded-md shadow-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
       <div className="flex items-center justify-between text-gray-700 dark:text-gray-400">
         <p className="text-sm">{daysAgoFunction(job?.createdAt)} days ago</p>
-        <Button variant="outline" className="rounded-full" size="icon">
-          <Bookmark />
-        </Button>
+        <div>
+          <Button
+            onClick={() => handleOpenDialog(job._id)}
+            variant="outline"
+            className="rounded-full"
+            size="icon"
+          >
+            <Trash2Icon />
+          </Button>
+        </div>
       </div>
       <div className="flex items-center gap-2 my-2">
         <Button className="p-6" variant="outline" size="icon">
@@ -73,34 +118,25 @@ const Job = ({ job }) => {
       </div>
       <div className="flex items-center gap-4 mt-4 dark:text-white">
         <Button
-          onClick={() => navigate(`/description/${job?._id}`)}
+          onClick={() => navigate(`/admin/description/${job?._id}`)}
           variant="outline"
         >
           Details
         </Button>
-        <Button className="bg-pink-400 hover:bg-teal-400 dark:bg-teal-600 dark:hover:bg-teal-500 text-white">
-          Save
+        <Button
+          className="  dark:bg-teal-600 dark:hover:bg-teal-500"
+          variant="outline"
+        >
+          Edit Job
         </Button>
       </div>
+      <DeleteJobDialog
+        open={open}
+        onClose={handleCloseDialog}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };
 
-
-export default Job;
-
-
-Job.propTypes = {
-  job: PropTypes.shape({
-    _id: PropTypes.string.isRequired, // Add _id validation
-    company: PropTypes.shape({
-      name: PropTypes.string,
-    }),
-    location: PropTypes.string,
-    title: PropTypes.string,
-    description: PropTypes.string,
-    position: PropTypes.string,
-    jobType: PropTypes.string,
-    salary: PropTypes.string,
-  }),
-};
+export default JobByAdmin;

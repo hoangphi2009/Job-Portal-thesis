@@ -112,7 +112,7 @@ const RecruiterTable = () => {
                       </div>
                       <div
                         onClick={() =>
-                          navigate(`/admin/jobs/${job._id}/applicants`)
+                          navigate(`/recruiter/jobs/${job._id}/applicants`)
                         }
                         className="flex items-center gap-2 w-fit cursor-pointer mt-2"
                       >

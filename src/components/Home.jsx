@@ -10,16 +10,17 @@ import { useNavigate } from "react-router-dom";
 import LatestCompanies from "./LatestCompanies";
 import ToolSection from "./ToolSection";
 
-
 const Home = () => {
   useGetAllJobs();
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   useEffect(() => {
     if (user?.role === "recruiter") {
-      navigate("/admin/companies");
+      navigate("/recruiter/companies");
+    } else if (user?.role === "admin") {
+      navigate("/admin");
     }
-  }, []);
+  }, [user, navigate]);
   return (
     <div>
       <div className="sticky top-0 z-50 border-b bg-gray-200 shadow-md">

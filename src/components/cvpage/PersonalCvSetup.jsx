@@ -4,7 +4,7 @@ import CvPreview from "./CvPreview";
 import FormSection from "./FormSection";
 
 const PersonalCvSetup = () => {
-  const { singleCv } = useSelector((stote) => stote.cv);
+  const { singleCv } = useSelector((store) => store.cv);
   return (
     <div>
       <Navbar />
